@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import '../../../utils/contact_card.dart';
 import '../controller/card_controller.dart';
-
+//this screen shows all the saved cards
 class SavedCardsView extends StatelessWidget {
 
   SavedCardsView({super.key});
@@ -22,17 +23,7 @@ class SavedCardsView extends StatelessWidget {
           itemCount: cardController.savedCards.length,
           itemBuilder: (context, index) {
             final card = cardController.savedCards[index];
-            return ListTile(
-              title: Text(card.name ?? 'No Name'),
-              subtitle: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(card.phone ?? 'No Phone'),
-                  Text(card.email ?? 'No Email'),
-                  Text(card.address ?? 'No Address'),
-                ],
-              ),
-            );
+            return ContactCard(name: card.name??"Name", phone: card.phone??"Phone", email: card.email??"Email");
           },
         );
       }),

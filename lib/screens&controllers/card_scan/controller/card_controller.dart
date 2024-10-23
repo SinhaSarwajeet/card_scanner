@@ -2,10 +2,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:scancard/main.dart';
-import 'package:scancard/screens&controllers/card_scan/view/visitin_card_scanner_view.dart';
+import 'package:scancard/utils/gradient_text.dart';
 import '../../../data/local storage/shared_prefrences.dart';
 import '../../../data/model/card_detail_model.dart';
 import 'package:google_mlkit_text_recognition/google_mlkit_text_recognition.dart';
+import '../../../utils/regx.dart';
 
 class CardController extends GetxController {
   var savedCards = <CardDetails>[].obs;
@@ -19,15 +20,15 @@ class CardController extends GetxController {
   @override
   void onInit() {
     super.onInit();
-    _loadSavedCards();
+    loadSavedCards();
   }
 
   void addCard(CardDetails card) {
-    savedCards.add(card);
+    savedCards.insert(0, card);
     _prefsService.saveCards(savedCards);
   }
 
-  Future<void> _loadSavedCards() async {
+  Future<void> loadSavedCards() async {
     var cards = await _prefsService.loadCards();
     savedCards.assignAll(cards);
   }
@@ -76,26 +77,55 @@ class CardController extends GetxController {
     }
   }
 
-  Future<CardDetails?> extractDetailsFromText( String text) async {
+  Future<CardDetails?> extractDetailsFromText(String text) async {
+    /// This function takes the extracted text from an image and processes it to
+    /// retrieve the card details such as name, phone, and email. It uses regex
+    /// to detect phone numbers and emails, and shows a dialog to the user to
+    /// select the name if available.
+    ///
+    /// The function performs the following steps:
+    /// 1. Split the extracted text into individual lines and filter out empty ones.
+    /// 2. Attempt to extract phone number and email from the text using regex.
+    /// 3. If either the phone or email is not found, it sets an error message
+    ///    and returns `null`.
+    /// 4. If phone and email are found, it prompts the user with a dialog to
+    ///    select the name from the text lines.
+    /// 5. If no valid name is selected, it sets an error message and returns `null`.
+    /// 6. If valid name, phone, and email are found, it returns a `CardDetails`
+    ///    object containing the extracted information.
+    ///
+    /// Parameters:
+    /// - `text`: The raw text extracted from the visiting card image.
+    ///
+    /// Returns:
+    /// - A `Future<CardDetails?>` containing the extracted details if successful,
+    ///   or `null` if any required information is missing The required informations are name, email and phone.
     List<String> lines = text.split('\n').where((line) => line.trim().isNotEmpty).toList();
 
     String? selectedName;
-    String? selectedPhone;
-    String? selectedEmail;
-    String? selectedAddress;
-    bool showWarning = false;
-    int cancelCount = 0;
+    String? extractedPhone;
+    String? extractedEmail;
 
-    Future<void> showSelectionDialog({
+    // Extract email and phone from text using regex
+    for (String line in lines) {
+      if (emailRegex.hasMatch(line) && extractedEmail == null) {
+        extractedEmail = emailRegex.firstMatch(line)?.group(0);
+      }
+      if (phoneRegex.hasMatch(line) && extractedPhone == null) {
+        extractedPhone = phoneRegex.firstMatch(line.replaceAll(" ", ''))?.group(0);
+      }
+    }
+    if(extractedEmail == null || extractedPhone == null){
+      setError("Phone/email or both were not found, choose clearer image.");
+      return null;
+    }
+
+    Future<void> showNameSelectionDialog({
       required BuildContext context,
-      required String title,
       required List<String> options,
-      required int currentStep,
-      required int totalSteps,
-      required ValueChanged<String?> onSelected,
+      required ValueChanged<String?> onCompleted,
     }) async {
       String? selectedOption;
-      bool nextPressed = false;
 
       await showDialog(
         barrierDismissible: false,
@@ -104,13 +134,26 @@ class CardController extends GetxController {
           return StatefulBuilder(
             builder: (context, setState) {
               return AlertDialog(
-                title: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Flexible(child: Text('Select $title from the extracted texts' )),
-                    Text('$currentStep of $totalSteps', style: const TextStyle(fontSize: 14, color: Colors.grey)),
-                  ],
+                title: Container(
+                    width: double.infinity,
+                    color: Colors.white,
+                    padding: const EdgeInsets.all(10),
+                    child: const Column(
+                      children: [
+                        GradientText(
+                          'Select Name',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontWeight: FontWeight.w500,
+                            fontSize: 18,
+                          ),
+                          gradient:
+                              LinearGradient(colors: [Colors.blue, Colors.pink]),
+                        ),
+                        SizedBox(height: 10,),
+                        Text("Email and phone have been detected automatically, please choose name from the options. Choosing an option is necessary to enable save button.", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 16),),
+                      ],
+                    ),
                 ),
                 content: Scrollbar(
                   thumbVisibility: true,
@@ -119,6 +162,7 @@ class CardController extends GetxController {
                     child: Column(
                       children: [
                         ...options.map((option) => ListTile(
+                          selectedTileColor: Colors.grey.withOpacity(0.3),
                           title: Text(option),
                           onTap: () {
                             setState(() {
@@ -126,8 +170,10 @@ class CardController extends GetxController {
                             });
                           },
                           selected: selectedOption == option,
-                        )),
+                        ),
+                        ),
                         ListTile(
+                          selectedTileColor: Colors.grey.withOpacity(0.3),
                           title: const Text('None'),
                           onTap: () {
                             setState(() {
@@ -136,137 +182,69 @@ class CardController extends GetxController {
                           },
                           selected: selectedOption == '',
                         ),
-
                       ],
                     ),
                   ),
                 ),
                 actions: [
-                  if (showWarning)
-                    const Padding(
-                      padding: EdgeInsets.only(top: 8.0),
-                      child: Text(
-                        'Warning: All fields are not provided, card details will not be saved Press Cancel again to discard.',
-                        style: TextStyle(color: Colors.red),
+                  Column(
+                    children: [
+                      const Text("Tap cancel button twice to dismiss this Dialog box. But, on cancelling, no card details will be saved.", style: TextStyle(color:  Colors.indigo),),
+                      const SizedBox(height: 10,),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.end,
+                        children: [
+                          GestureDetector(
+                            onDoubleTap: ()=>Get.back(),
+                            child: const Text('Cancel'),
+                          ),
+                          const SizedBox(width: 20,),
+                          GestureDetector(
+                            onTap: () {
+                              // Complete and close the dialog
+                              if(selectedOption?.isNotEmpty == true ) {
+                                onCompleted(selectedOption);
+                                Get.back();
+                              }
+                            },
+                            child: const GradientText("Save", style: TextStyle(fontSize: 14, fontWeight: FontWeight.w400), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
+                          ),
+                        ],
                       ),
-                    ),
-                 Row(
-                   mainAxisAlignment: MainAxisAlignment.end,
-                   children: [
-                     TextButton(
-                       onPressed: () {
-                         if (cancelCount == 0) {
-                           // Show warning message in red
-                           setState(() {
-                             showWarning = true;
-                           });
-                           cancelCount++;
-                         } else {
-                           // Second cancel press: dismiss dialog and navigate back to first screen
-                           Future.delayed(const Duration(milliseconds: 100), () {
-                             isProcessing(false);
-                             Get.until((route) => !Get.isDialogOpen!);
-                             Get.back();
-                            // Ensure it returns to the first screen
-                           });
-                         }
-                       },
-                       child: const Text('Cancel'),
-                     ),
-                     ElevatedButton(
-                       onPressed: () {
-                         if (selectedOption != null) {
-                           onSelected(selectedOption);
-
-                           // Reset warning and cancel count when next is pressed
-                           setState(() {
-                             showWarning = false;
-                             cancelCount = 0;
-                           });
-
-                           nextPressed = true;
-                           Get.back();// Close the dialog after selecting
-                         }
-                       },
-                       child: const Text('Next'),
-                     ),
-                   ],
-                 )
+                    ],
+                  )
                 ],
               );
             },
           );
         },
       );
-
-      if (nextPressed) {
-        await Future.delayed(const Duration(milliseconds: 200));
-      }
     }
 
-    // Sequentially show dialogs for each field
-    await showSelectionDialog(
+    // Show dialog only for selecting name
+    await showNameSelectionDialog(
       context: MyApp.navigatorKey.currentContext!,
-      title: 'Name',
       options: lines,
-      currentStep: 1,
-      totalSteps: 4,
-      onSelected: (selected) {
-        selectedName = selected;
-        lines.remove(selected);
+      onCompleted: (name) {
+        selectedName = name;
       },
     );
 
-    await showSelectionDialog(
-      context: MyApp.navigatorKey.currentContext!,
-      title: 'Phone',
-      options: lines,
-      currentStep: 2,
-      totalSteps: 4,
-      onSelected: (selected) {
-        selectedPhone = selected;
-        lines.remove(selected);
-      },
-    );
-
-    await showSelectionDialog(
-      context: MyApp.navigatorKey.currentContext!,
-      title: 'Email',
-      options: lines,
-      currentStep: 3,
-      totalSteps: 4,
-      onSelected: (selected) {
-        selectedEmail = selected;
-        lines.remove(selected);
-      },
-    );
-
-    await showSelectionDialog(
-      context: MyApp.navigatorKey.currentContext!,
-      title: 'Address',
-      options: lines,
-      currentStep: 4,
-      totalSteps: 4,
-      onSelected: (selected) {
-        selectedAddress = selected;
-        lines.remove(selected);
-      },
-    );
-
-    // If all fields are empty, show error and return null
-    if (selectedName == null && selectedPhone == null && selectedEmail == null && selectedAddress == null) {
-      setError('No valid details found. Please try again.');
+    // If no valid name is selected return null -> contact won't be saved
+    if (selectedName == null) {
+      setError('Name not selected. Please try again.');
       return null;
     }
 
     // Return the extracted and user-selected card details
     return CardDetails(
       name: selectedName?.isNotEmpty == true ? selectedName : null,
-      phone: selectedPhone?.isNotEmpty == true ? selectedPhone : null,
-      email: selectedEmail?.isNotEmpty == true ? selectedEmail : null,
-      address: selectedAddress?.isNotEmpty == true ? selectedAddress : null,
+      phone: extractedPhone?.isNotEmpty == true ? extractedPhone : null,
+      email: extractedEmail?.isNotEmpty == true ? extractedEmail : null,
+      address: null, // Address is no longer handled
       designation: null,
       company: null,
     );
   }
+
 }

@@ -1,11 +1,12 @@
-// lib/views/visiting_card_scanner_view.dart
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
+import '../../../utils/gradient_text.dart';
 import '../controller/card_controller.dart';
 import 'package:get/get.dart';
 import 'extract_image_view.dart';
-import 'saved_cards_view.dart'; // Import the saved cards screen
+import 'saved_cards_view.dart';
 
 class VisitingCardScannerView extends StatelessWidget {
   VisitingCardScannerView({super.key});
@@ -16,29 +17,72 @@ class VisitingCardScannerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: SafeArea(
-        child: Column(
-          children: <Widget>[
-            Text('Visiting Card Scanner',),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
-              children: [
-                ElevatedButton(
-                  onPressed: () => _pickImage(ImageSource.camera),
-                  child: const Text('Capture Card'),
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.all(20),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: <Widget>[
+              const GradientText("Scan", style: TextStyle(fontSize: 12), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
+              Flexible(
+                child: GestureDetector(
+                  onTap: () => _pickImage(ImageSource.camera),
+                  child:  Image.asset("assets/images/scan.png", width: 125,),
                 ),
-                ElevatedButton(
-                  onPressed: () => _pickImage(ImageSource.gallery),
-                  child: const Text('Select from Gallery'),
+              ),
+              const SizedBox(height: 20),
+              Flexible(
+                child: GestureDetector(
+                  onTap: () => _pickImage(ImageSource.gallery),
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const GradientText("Scan from Gallery", style: TextStyle(fontSize: 12), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
+                      const SizedBox(height: 5,),
+                      Image.asset("assets/images/gallery.png", width: 120,),
+                    ],
+                  ),
                 ),
-              ],
-            ),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Get.to(SavedCardsView()), // Navigate to saved cards screen
-              child: const Text('View Saved Cards'),
-            ),
-          ],
+              ),
+              const SizedBox(height: 35),
+              Flexible(
+                child: GestureDetector(
+                  onTap: () => Get.to(SavedCardsView()), // Navigate to saved cards screen
+                  child: Container(
+                    decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(12),
+                    gradient: const LinearGradient(
+                      colors: [Colors.blue, Colors.pink],
+                    ),
+                  ),
+                    child: Container(
+                      decoration:  BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(12)
+                        ),
+                      margin: const EdgeInsets.all(1),
+                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                      child: const GradientText(
+                        'Saved Cards',
+                        gradient: LinearGradient(
+                          colors: [
+                            Colors.blue,
+                            Colors.pink,
+                          ],
+                        ),
+                        style: TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.w400,
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );
