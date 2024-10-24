@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 class ContactCard extends StatelessWidget {
   final String name;
   final String phone;
   final String email;
 
-  const ContactCard({super.key, required this.name, required this.phone, required this.email});
+  const ContactCard({
+    super.key,
+    required this.name,
+    required this.phone,
+    required this.email,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -23,6 +29,7 @@ class ContactCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   CircleAvatar(
                     backgroundColor: Colors.blue,
@@ -36,15 +43,36 @@ class ContactCard extends StatelessWidget {
                   ),
                   const SizedBox(width: 16),
                   Flexible(
-                    child: Text(
-                      name,
-                      style: const TextStyle(
-                        fontSize: 22,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.black87,
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Padding(
+                        padding: const EdgeInsets.only(right: 20),
+                        child: Text(
+                          name,
+                          style: const TextStyle(
+                            fontSize: 22,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black87,
+                          ),
+                        ),
                       ),
                     ),
                   ),
+                  GestureDetector(
+                    onTap: () {
+                      // Copy details to clipboard
+                      String details = 'Name: $name\nPhone: $phone\nEmail: $email';
+                      Clipboard.setData(ClipboardData(text: details)).then((_) {
+                        // Show a snackbar to notify the user
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          const SnackBar(
+                            content: Text('Contact details copied to clipboard!'),
+                          ),
+                        );
+                      });
+                    },
+                    child: const Icon(Icons.copy, color: Colors.blue, size: 18,),
+                  )
                 ],
               ),
               const SizedBox(height: 20),
