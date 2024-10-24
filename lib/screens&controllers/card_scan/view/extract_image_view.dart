@@ -16,7 +16,13 @@ class ExtractCardView extends StatelessWidget {
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        title: const Text('Extract Card Details'),
+        leading: GestureDetector(
+          onTap: (){
+            Get.back();
+          },
+          child: const Icon(Icons.arrow_back_ios, color: Colors.black,)
+        ),
+        title: const Text('Extract Card Details',style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 16)),
       ),
       body: Center(
         child: SingleChildScrollView(

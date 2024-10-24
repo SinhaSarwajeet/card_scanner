@@ -14,7 +14,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
   @override
   void initState() {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarIconBrightness: Brightness.dark,systemNavigationBarColor: Colors.transparent, statusBarIconBrightness: Brightness.dark));
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(statusBarColor: Colors.transparent, systemNavigationBarIconBrightness: Brightness.dark,systemNavigationBarColor: Colors.black, statusBarIconBrightness: Brightness.light));
     splashController.loadSplash();
   }
 

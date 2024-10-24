@@ -13,7 +13,13 @@ class SavedCardsView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Saved Cards'),
+        leading: GestureDetector(
+            onTap: (){
+              Get.back();
+            },
+            child: const Icon(Icons.arrow_back_ios, color: Colors.black,)
+        ),
+        title: const Text('Saved Cards',style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 16)),
       ),
       body: Obx(() {
         if (cardController.savedCards.isEmpty) {

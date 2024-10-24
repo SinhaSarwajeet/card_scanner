@@ -104,22 +104,26 @@ The `CardController` class in this Flutter project is responsible for managing t
    - Sets a specific error message to `errorMessage`.
 
 6. **`processImageForOCR()`**:
-   - Processes the selected image for Optical Character Recognition (OCR) to extract text from the image.
-   - Clears previously extracted details and error messages.
-   - Uses Google’s ML Kit to recognize text in the image.
-   - Extracts phone numbers and email addresses using regular expressions and allows the user to select the name from the recognized text.
-   - Saves the successfully extracted card details to `savedCards` and updates the UI accordingly.
-   - If extraction fails, an appropriate error message is shown.
+    - This function processes an image using OCR to extract text and identify card details such as name, phone, and email.
+    - It first ensures an image is selected. If no image is selected, an error is set.
+    - The extracted card details and any previous errors are cleared before processing starts.
+    - The image is processed with OCR, and the recognized text is extracted.
+    - If no text is detected, an error is shown, and the process is halted.
+    - The function uses the extracted text to detect card details (name, phone, and email).
+    - Before saving the extracted details, it checks if a card with the same phone or email already exists in the `savedCards` list.
+    - If a match is found, the existing card is updated with the new details. Otherwise, a new card is added to the saved cards.
+    - The extracted details are finally stored in the `extractedCardDetails` variable for further use.
+
 
 7. **`extractDetailsFromText(String text)`**:
-   - Takes the extracted text from the image and processes it to retrieve card details such as name, phone number, and email.
-   - Uses regular expressions to find phone numbers and email addresses in the text.
-   - Prompts the user to select a name from the available lines of text using a dialog.
-   - Returns a `CardDetails` object if name, phone, and email are successfully extracted.
+    - This function processes a block of text (OCR result) to extract card details like name, phone, and email.
+    - It uses regular expressions to identify phone numbers and email addresses.
+    - The first text line that does not match a phone or email pattern is assumed to be the name.
+    - After extracting these details, it checks if a card with the same phone or email already exists in the savedCards list.
+    - If a duplicate is found, it shows a dialog asking the user whether to overwrite the existing card or not.
+    - A dialog is also shown to the user for confirming and editing the detected details before saving.
+    - The function returns a `CardDetails` object if extraction and saving are successful, otherwise it returns null.
 
-8. **`showNameSelectionDialog()`**:
-   - Displays a dialog to allow the user to select a name from the extracted lines of text.
-   - The user must select a name in order to save the card details.
 
 #### Dependencies:
 - **Google ML Kit**: Used for text recognition.

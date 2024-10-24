@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:image_picker/image_picker.dart';
 import 'dart:io';
 import '../../../utils/gradient_text.dart';
@@ -51,6 +50,7 @@ class VisitingCardScannerView extends StatelessWidget {
                 child: GestureDetector(
                   onTap: () => Get.to(SavedCardsView()), // Navigate to saved cards screen
                   child: Container(
+                    margin: const EdgeInsets.only(bottom: 20),
                     decoration: BoxDecoration(
                     borderRadius: BorderRadius.circular(12),
                     gradient: const LinearGradient(
