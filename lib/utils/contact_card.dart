@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_contacts/flutter_contacts.dart';
 
 class ContactCard extends StatelessWidget {
   final String name;
@@ -12,6 +13,58 @@ class ContactCard extends StatelessWidget {
     required this.phone,
     required this.email,
   });
+
+  Future<void> _addToContacts(BuildContext context) async {
+    try {
+      if (await FlutterContacts.requestPermission()) {
+        // Search for existing contacts by name, phone, or email
+        List<Contact> existingContacts = await FlutterContacts.getContacts(
+          withProperties: true,
+        );
+
+        bool contactExists = existingContacts.any((contact) {
+          bool nameMatch = contact.name.first == name;
+          bool phoneMatch = contact.phones.any((p) => p.number == phone);
+          bool emailMatch = contact.emails.any((e) => e.address == email);
+          return nameMatch || phoneMatch || emailMatch;
+        });
+
+        if (contactExists) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Contact already exists.'),
+            ),
+          );
+        } else {
+          final contact = Contact()
+            ..name.first = name
+            ..phones = [Phone(phone)]
+            ..emails = [Email(email)];
+
+          await contact.insert();
+
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Contact added successfully!'),
+            ),
+          );
+        }
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Permission to access contacts was denied.'),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint('Error checking or adding contact: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('An error occurred while adding the contact.'),
+        ),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,13 +86,16 @@ class ContactCard extends StatelessWidget {
               children: [
                 Container(
                   padding: const EdgeInsets.symmetric(vertical: 50),
-                  decoration:  BoxDecoration(
+                  decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                        colors: [
-                          Colors.yellow.withOpacity(0.6), Colors.pink.withOpacity(0.6), Colors.blue.withOpacity(0.6)
-                        ]),
+                      end: Alignment.bottomRight,
+                      colors: [
+                        Colors.yellow.withOpacity(0.6),
+                        Colors.pink.withOpacity(0.6),
+                        Colors.blue.withOpacity(0.6)
+                      ],
+                    ),
                   ),
                   child: Column(
                     children: [
@@ -78,13 +134,27 @@ class ContactCard extends StatelessWidget {
                 const SizedBox(height: 20),
                 ListTile(
                   leading: const Icon(Icons.phone, color: Colors.grey),
-                  title: Text(phone,style: const TextStyle(color: Colors.white),),
+                  title: Text(
+                    phone,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
                 ListTile(
                   leading: const Icon(Icons.email, color: Colors.grey),
-                  title: Text(email, style: const TextStyle(color: Colors.white),),
+                  title: Text(
+                    email,
+                    style: const TextStyle(color: Colors.white),
+                  ),
                 ),
-                const SizedBox(height: 20,)
+                const SizedBox(height: 20),
+                Center(
+                  child: ElevatedButton.icon(
+                    onPressed: () => _addToContacts(context),
+                    icon: const Icon(Icons.person_add),
+                    label: const Text('Add to Contacts'),
+                  ),
+                ),
+                const SizedBox(height: 20),
               ],
             ),
             GestureDetector(
@@ -101,8 +171,12 @@ class ContactCard extends StatelessWidget {
                 });
               },
               child: const Padding(
-                padding: EdgeInsets.only(top: 16,right: 16),
-                child: Icon(Icons.copy, color: Colors.white, size: 18,),
+                padding: EdgeInsets.only(top: 16, right: 16),
+                child: Icon(
+                  Icons.copy,
+                  color: Colors.white,
+                  size: 18,
+                ),
               ),
             ),
           ],
