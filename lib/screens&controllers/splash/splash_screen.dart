@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:scancard/screens&controllers/splash/splash_controller.dart';
+import 'package:scancard/utils/gradient_text.dart';
 
 
 class SplashScreen extends StatefulWidget {
@@ -23,9 +24,11 @@ class _SplashScreenState extends State<SplashScreen> {
     return Scaffold(
       body:Container(
         decoration: const BoxDecoration(
-          gradient: LinearGradient(colors: [Colors.blue, Colors.pink], begin: Alignment.topCenter, end: Alignment.bottomCenter)
+          color: Colors.black
         ),
-        child: const Center(child: Text("CardScan", style: TextStyle(fontWeight: FontWeight.w800, color: Colors.white, fontSize: 40, fontStyle: FontStyle.italic),)),
+        child: const Center(
+            child:GradientText("CardScan", style: TextStyle(fontWeight: FontWeight.w400, color: Colors.white, fontSize: 40, fontStyle: FontStyle.italic), gradient: LinearGradient(colors: [Colors.blue, Colors.pink, ]))
+        ),
       ),
       resizeToAvoidBottomInset: true,
     );

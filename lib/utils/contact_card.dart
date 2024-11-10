@@ -18,6 +18,7 @@ class ContactCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Card(
+        color: Colors.black,
         clipBehavior: Clip.hardEdge,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
@@ -77,11 +78,11 @@ class ContactCard extends StatelessWidget {
                 const SizedBox(height: 20),
                 ListTile(
                   leading: const Icon(Icons.phone, color: Colors.grey),
-                  title: Text(phone),
+                  title: Text(phone,style: const TextStyle(color: Colors.white),),
                 ),
                 ListTile(
                   leading: const Icon(Icons.email, color: Colors.grey),
-                  title: Text(email),
+                  title: Text(email, style: const TextStyle(color: Colors.white),),
                 ),
                 const SizedBox(height: 20,)
               ],

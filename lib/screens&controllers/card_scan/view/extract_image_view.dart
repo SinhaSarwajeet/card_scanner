@@ -14,16 +14,16 @@ class ExtractCardView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        backgroundColor: Colors.black,
         leading: GestureDetector(
           onTap: (){
             Get.back();
           },
-          child: const Icon(Icons.arrow_back_ios, color: Colors.black,)
+          child: const Icon(Icons.arrow_back_ios, color: Colors.white,)
         ),
-        title: const Text('Extract Card Details',style: TextStyle(color: Colors.black, fontWeight: FontWeight.w600, fontSize: 16)),
+        title: const Text('Extract Card Details',style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600, fontSize: 16)),
       ),
       body: Center(
         child: SingleChildScrollView(
@@ -58,7 +58,7 @@ class ExtractCardView extends StatelessWidget {
                             margin: const EdgeInsets.all(1),
                             padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
                             decoration: const BoxDecoration(
-                                color: Colors.white,
+                                color: Colors.black,
                                 borderRadius: BorderRadius.all(Radius.circular(12))
                             ),
                             child: const GradientText(
@@ -114,7 +114,7 @@ class ExtractCardView extends StatelessWidget {
                       margin: const EdgeInsets.all(1),
                       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 7),
                       decoration: const BoxDecoration(
-                          color: Colors.white,
+                          color: Colors.black,
                           borderRadius: BorderRadius.all(Radius.circular(12),
                           ),
                       ),

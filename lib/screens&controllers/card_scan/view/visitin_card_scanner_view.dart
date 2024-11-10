@@ -16,7 +16,7 @@ class VisitingCardScannerView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: Colors.black,
       body: SafeArea(
         child: Container(
           width: double.infinity,
@@ -56,7 +56,7 @@ class VisitingCardScannerView extends StatelessWidget {
                     ),
                       child: Container(
                         decoration:  BoxDecoration(
-                            color: Colors.white,
+                            color: Colors.black,
                             borderRadius: BorderRadius.circular(12)
                           ),
                         margin: const EdgeInsets.all(1),
