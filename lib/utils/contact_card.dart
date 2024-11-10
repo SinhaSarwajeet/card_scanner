@@ -18,74 +18,93 @@ class ContactCard extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Card(
+        clipBehavior: Clip.hardEdge,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(15.0),
         ),
         elevation: 8,
         shadowColor: Colors.grey.withOpacity(0.3),
-        child: Padding(
-          padding: const EdgeInsets.all(16.0),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  CircleAvatar(
-                    backgroundColor: Colors.blue,
-                    child: Text(
-                      name[0].toUpperCase(),
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                      ),
-                    ),
+        child: Stack(
+          alignment: Alignment.topRight,
+          children: [
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.symmetric(vertical: 50),
+                  decoration:  BoxDecoration(
+                    gradient: LinearGradient(
+                      begin: Alignment.topLeft,
+                        end: Alignment.bottomRight,
+                        colors: [
+                          Colors.yellow.withOpacity(0.6), Colors.pink.withOpacity(0.6), Colors.blue.withOpacity(0.6)
+                        ]),
                   ),
-                  const SizedBox(width: 16),
-                  Flexible(
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Padding(
-                        padding: const EdgeInsets.only(right: 20),
-                        child: Text(
-                          name,
-                          style: const TextStyle(
-                            fontSize: 22,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black87,
+                  child: Column(
+                    children: [
+                      Align(
+                        alignment: Alignment.center,
+                        child: CircleAvatar(
+                          radius: 40,
+                          backgroundColor: Colors.white.withOpacity(.3),
+                          child: Text(
+                            name[0].toUpperCase(),
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 24,
+                            ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                  GestureDetector(
-                    onTap: () {
-                      // Copy details to clipboard
-                      String details = 'Name: $name\nPhone: $phone\nEmail: $email';
-                      Clipboard.setData(ClipboardData(text: details)).then((_) {
-                        // Show a snackbar to notify the user
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Contact details copied to clipboard!'),
+                      const SizedBox(height: 16),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Padding(
+                          padding: const EdgeInsets.only(right: 20),
+                          child: Text(
+                            name,
+                            style: const TextStyle(
+                              fontSize: 22,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white,
+                            ),
                           ),
-                        );
-                      });
-                    },
-                    child: const Icon(Icons.copy, color: Colors.blue, size: 18,),
-                  )
-                ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 20),
+                ListTile(
+                  leading: const Icon(Icons.phone, color: Colors.grey),
+                  title: Text(phone),
+                ),
+                ListTile(
+                  leading: const Icon(Icons.email, color: Colors.grey),
+                  title: Text(email),
+                ),
+                const SizedBox(height: 20,)
+              ],
+            ),
+            GestureDetector(
+              onTap: () {
+                // Copy details to clipboard
+                String details = 'Name: $name\nPhone: $phone\nEmail: $email';
+                Clipboard.setData(ClipboardData(text: details)).then((_) {
+                  // Show a snackbar to notify the user
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    const SnackBar(
+                      content: Text('Contact details copied to clipboard!'),
+                    ),
+                  );
+                });
+              },
+              child: const Padding(
+                padding: EdgeInsets.only(top: 16,right: 16),
+                child: Icon(Icons.copy, color: Colors.white, size: 18,),
               ),
-              const SizedBox(height: 20),
-              ListTile(
-                leading: const Icon(Icons.phone, color: Colors.blue),
-                title: Text(phone),
-              ),
-              ListTile(
-                leading: const Icon(Icons.email, color: Colors.blue),
-                title: Text(email),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );

@@ -20,68 +20,66 @@ class VisitingCardScannerView extends StatelessWidget {
       body: SafeArea(
         child: Container(
           width: double.infinity,
-          padding: const EdgeInsets.all(20),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              const GradientText("Scan", style: TextStyle(fontSize: 12), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
-              Flexible(
-                child: GestureDetector(
-                  onTap: () => _pickImage(ImageSource.camera),
-                  child:  Image.asset("assets/images/scan.png", width: 125,),
-                ),
-              ),
-              const SizedBox(height: 20),
-              Flexible(
-                child: GestureDetector(
-                  onTap: () => _pickImage(ImageSource.gallery),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      const GradientText("Scan from Gallery", style: TextStyle(fontSize: 12), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
-                      const SizedBox(height: 5,),
-                      Image.asset("assets/images/gallery.png", width: 120,),
-                    ],
+          padding: const EdgeInsets.only(top: 20, left: 20, right: 20),
+          child: Center(
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  const GradientText("Scan", style: TextStyle(fontSize: 12), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
+                  GestureDetector(
+                    onTap: () => _pickImage(ImageSource.camera),
+                    child:  Image.asset("assets/images/scan.png", width: 125,),
                   ),
-                ),
-              ),
-              const SizedBox(height: 35),
-              Flexible(
-                child: GestureDetector(
-                  onTap: () => Get.to(SavedCardsView()), // Navigate to saved cards screen
-                  child: Container(
-                    margin: const EdgeInsets.only(bottom: 20),
-                    decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(12),
-                    gradient: const LinearGradient(
-                      colors: [Colors.blue, Colors.pink],
+                  const SizedBox(height: 20),
+                  GestureDetector(
+                    onTap: () => _pickImage(ImageSource.gallery),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        const GradientText("Scan from Gallery", style: TextStyle(fontSize: 12), gradient: LinearGradient(colors: [Colors.blue, Colors.pink])),
+                        const SizedBox(height: 5,),
+                        Image.asset("assets/images/gallery.png", width: 120,),
+                      ],
                     ),
                   ),
+                  const SizedBox(height: 35),
+                  GestureDetector(
+                    onTap: () => Get.to(SavedCardsView()), // Navigate to saved cards screen
                     child: Container(
-                      decoration:  BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(12)
-                        ),
-                      margin: const EdgeInsets.all(1),
-                      padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
-                      child: const GradientText(
-                        'Saved Cards',
-                        gradient: LinearGradient(
-                          colors: [
-                            Colors.blue,
-                            Colors.pink,
-                          ],
-                        ),
-                        style: TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w400,
+                      margin: const EdgeInsets.only(bottom: 20),
+                      decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(12),
+                      gradient: const LinearGradient(
+                        colors: [Colors.blue, Colors.pink],
+                      ),
+                    ),
+                      child: Container(
+                        decoration:  BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.circular(12)
+                          ),
+                        margin: const EdgeInsets.all(1),
+                        padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 20),
+                        child: const GradientText(
+                          'Saved Cards',
+                          gradient: LinearGradient(
+                            colors: [
+                              Colors.blue,
+                              Colors.pink,
+                            ],
+                          ),
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                       ),
                     ),
                   ),
-                ),
+                ],
               ),
-            ],
+            ),
           ),
         ),
       ),

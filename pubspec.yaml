@@ -42,7 +42,7 @@ dependencies:
   get:
   camera: ^0.10.0
   fluttertoast:
-
+  url_launcher:
 dev_dependencies:
   flutter_test:
     sdk: flutter
